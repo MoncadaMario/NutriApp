@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Dropdown } from 'react-native-element-dropdown'; // Asegúrate de instalar esta biblioteca
 import { useRouter } from "expo-router";
 
@@ -35,22 +35,34 @@ export default function RegisterScreen() {
       return;
     }
 
-    try {
-      const response = await axios.post("https://localhost:7042/api/usuarios", {
+    const userData = {
         nombre,
         correo,
         contrasena,
         rol,
         genero,
-      });
+    }
 
-      if (response.status === 200) {
+console.log("Datos a enviar:", userData);
+
+    try {
+      const response = await axios.post("https://localhost:7042/api/Usuarios", userData);
+      if (response.status > 200 && response.status < 300) {
         console.log("Usuario registrado con éxito:", response.data);
-        router.push("/login"); 
+        
+        Alert.alert("El usuario fue registrado con exito");
+        
+        // Limpiar los campos del formulario
+        setNombre("");
+        setCorreo("");
+        setContrasena("");
+        setRol(null);
+        setGenero(null);
+
+        router.push("/login");
       }
     } catch (err: any) {
       console.error("Error al registrar el usuario:", err.message);
-      setErrorMessage(err.response?.data?.message || "Error al crear el usuario");
     }
   };
 
